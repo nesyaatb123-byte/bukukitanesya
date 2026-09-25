@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BukuKita - Sistem Persediaan & Penjualan Buku</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+        background: #fff5f9;
+        color: #3d2630;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 240px;
+        height: 100vh;
+        background: linear-gradient(180deg, #d63384, #a61e62);
+        color: white;
+        padding: 25px 18px;
+        box-shadow: 4px 0 15px rgba(150, 30, 90, 0.15);
+    }
+
+    .logo {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .logo .icon {
+        font-size: 45px;
+    }
+
+    .logo h2 {
+        margin-top: 5px;
+        font-size: 22px;
+    }
+
+    .logo p {
+        font-size: 12px;
+        opacity: 0.85;
+    }
+
+    .menu {
+        list-style: none;
+    }
+
+    .menu li {
+        margin: 8px 0;
+    }
+
+    .menu a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 13px 15px;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+        background: rgba(255,255,255,0.18);
+    }
+
+    /* MAIN */
+    .main {
+        margin-left: 240px;
+        padding: 25px;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .topbar h1 {
+        color: #a61e62;
+        font-size: 27px;
+    }
+
+    .topbar p {
+        color: #8a6977;
+        margin-top: 4px;
+    }
+
+    .date {
+        background: white;
+        padding: 10px 17px;
+        border-radius: 10px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        color: #8a315c;
+        font-size: 14px;
+    }
+
+    /* CARD */
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(166,30,98,0.08);
+        border-left: 5px solid #d63384;
+    }
+
+    .card .card-title {
+        font-size: 13px;
+        color: #8c707c;
+        margin-bottom: 10px;
+    }
+
+    .card .number {
+        font-size: 25px;
+        font-weight: bold;
+        color: #a61e62;
+    }
+
+    .card .small {
+        font-size: 12px;
+        margin-top: 7px;
+        color: #9b7c88;
+    }
+
+    /* ACCOUNTING */
+    .section-title {
+        color: #a61e62;
+        margin-bottom: 15px;
+        font-size: 19px;
+    }
+
+    .accounting {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .account-card {
+        background: #fff;
+        padding: 17px;
+        border-radius: 13px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .account-card p {
+        font-size: 12px;
+        color: #927580;
+    }
+
+    .account-card h3 {
+        color: #c02670;
+        margin-top: 7px;
+        font-size: 17px;
+    }
+
+    /* PANEL */
+    .panel {
+        background: white;
+        border-radius: 15px;
+        padding: 22px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+    .panel-header h2 {
+        color: #a61e62;
+        font-size: 20px;
+    }
+
+    /* BUTTON */
+    button {
+        border: none;
+        cursor: pointer;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    .btn-primary {
+        background: #d63384;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #b9276d;
+    }
+
+    .btn-edit {
+        background: #ffe0ed;
+        color: #b52269;
+        margin-right: 5px;
+    }
+
+    .btn-delete {
+        background: #ffe5e5;
+        color: #d33;
+    }
+
+    .btn-sale {
+        background: #e9d5ff;
+        color: #7c3aed;
+        margin-right: 5px;
+    }
+
+    /* SEARCH */
+    .tools {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .search {
+        flex: 1;
+        padding: 11px 14px;
+        border: 1px solid #f0c8d9;
+        border-radius: 9px;
+        outline: none;
+    }
+
+    .search:focus {
+        border-color: #d63384;
+    }
+
+    select {
+        padding: 10px 14px;
+        border: 1px solid #f0c8d9;
+        border-radius: 9px;
+        background: white;
+        outline: none;
+    }
+
+    /* TABLE */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+    }
+
+    th {
+        background: #fff0f6;
+        color: #9e245d;
+        font-size: 13px;
+        padding: 13px 10px;
+        text-align: left;
+        border-bottom: 2px solid #f4d2e0;
+    }
+
+    td {
+        padding: 13px 10px;
+        border-bottom: 1px solid #f3e4e9;
+        font-size: 13px;
+    }
+
+    tr:hover {
+        background: #fff9fb;
+    }
+
+    .book-title {
+        font-weight: 600;
+        color: #68283f;
+    }
+
+    .author {
+        color: #91727d;
+        font-size: 12px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .badge-aman {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .badge-menipis {
+        background: #fef3c7;
+        color: #a16207;
+    }
+
+    .badge-habis {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    /* FORM */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 99;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(50,20,35,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        width: 700px;
+        max-width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+        color: #a61e62;
+    }
+
+    .close {
+        font-size: 25px;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-size: 13px;
+        margin-bottom: 6px;
+        color: #6f5360;
+        font-weight: 600;
+    }
+
+    input,
+    .form-group select {
+        padding: 11px;
+        border: 1px solid #e8c5d4;
+        border-radius: 8px;
+        outline: none;
+        width: 100%;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #d63384;
+    }
+
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .btn-cancel {
+        background: #eee;
+        color: #555;
+    }
+
+    /* SALE */
+    .sale-info {
+        background: #fff4f8;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .sale-total {
+        background: #fff0f6;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        text-align: right;
+    }
+
+    .sale-total strong {
+        color: #c02670;
+        font-size: 20px;
+    }
+
+    /* EMPTY */
+    .empty {
+        text-align: center;
+        padding: 40px;
+        color: #a68b96;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1100px) {
+        .cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .accounting {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 750px) {
+        .sidebar {
+            position: relative;
+            width: 100%;
+            height: auto;
+        }
+
+        .main {
+            margin-left: 0;
+        }
+
+        .cards,
+        .accounting {
+            grid-template-columns: 1fr;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full {
+            grid-column: auto;
+        }
+
+        .topbar {
+            display: block;
+        }
+
+        .date {
+            display: inline-block;
+            margin-top: 10px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <div class="logo">
+        <div class="icon">📚</div>
+        <h2>BukuKita</h2>
+        <p>Toko Buku & Sistem Akuntansi</p>
+    </div>
+
+    <ul class="menu">
+        <li>
+            <a href="#" class="active" onclick="showSection('dashboard')">
+                🏠 Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="#" onclick="showSection('buku')">
+                📚 Data Buku
+            </a>
+        </li>
+
+        <li>
+            <a href="#" onclick="openSaleModal()">
+                🛒 Penjualan
+            </a>
+        </li>
+    </ul>
+
+</div>
+
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="topbar">
+        <div>
+            <h1>📚 BukuKita</h1>
+            <p>Sistem Persediaan & Penjualan Buku</p>
+        </div>
+
+        <div class="date" id="tanggal"></div>
+    </div>
+
+
+    <!-- DASHBOARD -->
+    <section id="dashboard">
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-title">TOTAL JUDUL BUKU</div>
+                <div class="number" id="totalBuku">0</div>
+                <div class="small">Judul buku tersedia</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">STOK TERSEDIA</div>
+                <div class="number" id="totalStok">0</div>
+                <div class="small">Total buku di toko</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">STOK MENIPIS</div>
+                <div class="number" id="stokMenipis">0</div>
+                <div class="small">Perlu segera restock</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">STOK HABIS</div>
+                <div class="number" id="stokHabis">0</div>
+                <div class="small">Buku tidak tersedia</div>
+            </div>
+
+        </div>
+
+
+        <h2 class="section-title">Ringkasan Akuntansi</h2>
+
+        <div class="accounting">
+
+            <div class="account-card">
+                <p>Nilai Persediaan</p>
+                <h3 id="nilaiPersediaan">Rp0</h3>
+            </div>
+
+            <div class="account-card">
+                <p>Modal Persediaan</p>
+                <h3 id="modalPersediaan">Rp0</h3>
+            </div>
+
+            <div class="account-card">
+                <p>Estimasi Omzet</p>
+                <h3 id="estimasiOmzet">Rp0</h3>
+            </div>
+
+            <div class="account-card">
+                <p>Potensi Laba</p>
+                <h3 id="potensiLaba">Rp0</h3>
+            </div>
+
+            <div class="account-card">
+                <p>Margin Laba</p>
+                <h3 id="marginLaba">0%</h3>
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-header">
+                <h2>📖 Daftar Buku</h2>
+
+                <button class="btn-primary" onclick="openBookModal()">
+                    + Tambah Buku
+                </button>
+            </div>
+
+            <div class="tools">
+
+                <input
+                    type="text"
+                    class="search"
+                    id="searchDashboard"
+                    placeholder="🔍 Cari judul buku atau penulis..."
+                    onkeyup="renderBooks()"
+                >
+
+                <select id="filterDashboard" onchange="renderBooks()">
+                    <option value="">Semua Kategori</option>
+                    <option value="Novel">Novel</option>
+                    <option value="Pendidikan">Pendidikan</option>
+                    <option value="Self Improvement">Self Improvement</option>
+                    <option value="Bisnis">Bisnis</option>
+                    <option value="Komik">Komik</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+
+            </div>
+
+            <div class="table-container">
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode</th>
+                            <th>Judul Buku</th>
+                            <th>Penulis</th>
+                            <th>Kategori</th>
+                            <th>Stok</th>
+                            <th>Harga Beli</th>
+                            <th>Harga Jual</th>
+                            <th>Nilai Persediaan</th>
+                            <th>Potensi Laba</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="bookTable"></tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DATA BUKU -->
+    <section id="buku" style="display:none;">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h2>📚 Data Buku</h2>
+                    <p style="font-size:13px;color:#927580;margin-top:4px;">
+                        Kelola seluruh persediaan buku BukuKita
+                    </p>
+                </div>
+
+                <button class="btn-primary" onclick="openBookModal()">
+                    + Tambah Buku
+                </button>
+
+            </div>
+
+            <div class="tools">
+
+                <input
+                    type="text"
+                    class="search"
+                    id="searchBook"
+                    placeholder="🔍 Cari buku..."
+                    onkeyup="renderBookSection()"
+                >
+
+                <select id="filterBook" onchange="renderBookSection()">
+                    <option value="">Semua Kategori</option>
+                    <option value="Novel">Novel</option>
+                    <option value="Pendidikan">Pendidikan</option>
+                    <option value="Self Improvement">Self Improvement</option>
+                    <option value="Bisnis">Bisnis</option>
+                    <option value="Komik">Komik</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode</th>
+                            <th>Judul Buku</th>
+                            <th>Penulis</th>
+                            <th>Penerbit</th>
+                            <th>Kategori</th>
+                            <th>Stok</th>
+                            <th>Harga Beli</th>
+                            <th>Harga Jual</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="bookTableSection"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- MODAL TAMBAH/EDIT BUKU -->
+<div class="modal" id="bookModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">Tambah Buku</h2>
+
+            <span class="close" onclick="closeBookModal()">×</span>
+
+        </div>
+
+
+        <form id="bookForm">
+
+            <input type="hidden" id="editIndex">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Kode Buku</label>
+                    <input type="text" id="kode" placeholder="Contoh: BK006" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Judul Buku</label>
+                    <input type="text" id="judul" placeholder="Masukkan judul buku" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Penulis</label>
+                    <input type="text" id="penulis" placeholder="Nama penulis" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Penerbit</label>
+                    <input type="text" id="penerbit" placeholder="Nama penerbit" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tahun Terbit</label>
+                    <input type="number" id="tahun" placeholder="2026" min="1900" max="2100">
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori</label>
+
+                    <select id="kategori" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="Novel">Novel</option>
+                        <option value="Pendidikan">Pendidikan</option>
+                        <option value="Self Improvement">Self Improvement</option>
+                        <option value="Bisnis">Bisnis</option>
+                        <option value="Komik">Komik</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Stok</label>
+                    <input type="number" id="stok" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Stok Minimum</label>
+                    <input type="number" id="stokMin" min="0" value="5" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Harga Beli</label>
+                    <input type="number" id="hargaBeli" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Harga Jual</label>
+                    <input type="number" id="hargaJual" min="0" required>
+                </div>
+
+            </div>
+
+
+            <div class="form-footer">
+
+                <button type="button" class="btn-cancel" onclick="closeBookModal()">
+                    Batal
+                </button>
+
+                <button type="submit" class="btn-primary">
+                    Simpan Buku
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL PENJUALAN -->
+<div class="modal" id="saleModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>🛒 Transaksi Penjualan</h2>
+
+            <span class="close" onclick="closeSaleModal()">×</span>
+
+        </div>
+
+        <div class="sale-info">
+            <p style="font-size:13px;color:#86606f;">
+                Pilih buku yang ingin dijual dan masukkan jumlahnya.
+            </p>
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group full">
+                <label>Pilih Buku</label>
+
+                <select id="saleBook" onchange="updateSalePrice()">
+                    <option value="">Pilih buku...</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <label>Harga Jual</label>
+                <input type="number" id="salePrice" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Jumlah Terjual</label>
+                <input type="number" id="saleQty" min="1" value="1" onchange="calculateSale()">
+            </div>
+
+        </div>
+
+        <div class="sale-total">
+
+            <p>Total Penjualan</p>
+
+            <strong id="saleTotal">Rp0</strong>
+
+        </div>
+
+        <div class="form-footer">
+
+            <button class="btn-cancel" onclick="closeSaleModal()">
+                Batal
+            </button>
+
+            <button class="btn-primary" onclick="processSale()">
+                Simpan Penjualan
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+/* =====================================
+   KONFIGURASI SUPABASE
+   Ganti dua nilai ini dengan Project URL
+   dan anon key dari dashboard Supabase kamu
+   (Project Settings > API)
+===================================== */
+
+const SUPABASE_URL = "https://utyogbphzpwpsqaitooj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_CR9nlXiLU3BGMDKLnmglTw_189M5TSJ";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+
+/* =====================================
+   DATA AWAL (dimuat dari Supabase)
+===================================== */
+
+let books = [];
+
+// Ubah row dari Supabase (snake_case) jadi format yang
+// dipakai di seluruh kode ini (camelCase)
+function mapRowToBook(row) {
+    return {
+        id: row.id,
+        kode: row.kode,
+        judul: row.judul,
+        penulis: row.penulis,
+        penerbit: row.penerbit,
+        tahun: row.tahun,
+        kategori: row.kategori,
+        stok: row.stok,
+        stokMin: row.stok_min,
+        hargaBeli: row.harga_beli,
+        hargaJual: row.harga_jual
+    };
+}
+
+// Ubah objek book (camelCase) jadi format kolom Supabase (snake_case)
+function mapBookToRow(book) {
+    return {
+        kode: book.kode,
+        judul: book.judul,
+        penulis: book.penulis,
+        penerbit: book.penerbit,
+        tahun: book.tahun,
+        kategori: book.kategori,
+        stok: book.stok,
+        stok_min: book.stokMin,
+        harga_beli: book.hargaBeli,
+        harga_jual: book.hargaJual
+    };
+}
+
+async function loadBooks() {
+    const { data, error } = await supabaseClient
+        .from("books")
+        .select("*")
+        .order("kode");
+
+    if (error) {
+        alert("Gagal memuat data buku dari Supabase:\n" + error.message);
+        books = [];
+        return;
+    }
+
+    books = (data || []).map(mapRowToBook);
+}
+
+
+/* =====================================
+   FORMAT RUPIAH
+===================================== */
+
+function rupiah(number) {
+
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+    }).format(number);
+
+}
+
+
+/* =====================================
+   STATUS STOK
+===================================== */
+
+function getStatus(book) {
+
+    if (book.stok <= 0) {
+
+        return `<span class="badge badge-habis">Habis</span>`;
+
+    }
+
+    if (book.stok <= book.stokMin) {
+
+        return `<span class="badge badge-menipis">Menipis</span>`;
+
+    }
+
+    return `<span class="badge badge-aman">Aman</span>`;
+
+}
+
+
+/* =====================================
+   DASHBOARD
+===================================== */
+
+function updateDashboard() {
+
+    let totalBuku = books.length;
+
+    let totalStok = books.reduce(
+        (sum, book) => sum + Number(book.stok),
+        0
+    );
+
+    let menipis = books.filter(
+        book => book.stok > 0 && book.stok <= book.stokMin
+    ).length;
+
+    let habis = books.filter(
+        book => book.stok <= 0
+    ).length;
+
+    let nilaiPersediaan = books.reduce(
+        (sum, book) => sum + (book.stok * book.hargaBeli),
+        0
+    );
+
+    let omzet = books.reduce(
+        (sum, book) => sum + (book.stok * book.hargaJual),
+        0
+    );
+
+    let laba = books.reduce(
+        (sum, book) => sum + (book.stok * (book.hargaJual - book.hargaBeli)),
+        0
+    );
+
+    let margin = omzet > 0 ? (laba / omzet) * 100 : 0;
+
+
+    document.getElementById("totalBuku").innerText = totalBuku;
+
+    document.getElementById("totalStok").innerText = totalStok;
+
+    document.getElementById("stokMenipis").innerText = menipis;
+
+    document.getElementById("stokHabis").innerText = habis;
+
+    document.getElementById("nilaiPersediaan").innerText =
+        rupiah(nilaiPersediaan);
+
+    document.getElementById("modalPersediaan").innerText =
+        rupiah(nilaiPersediaan);
+
+    document.getElementById("estimasiOmzet").innerText =
+        rupiah(omzet);
+
+    document.getElementById("potensiLaba").innerText =
+        rupiah(laba);
+
+    document.getElementById("marginLaba").innerText =
+        margin.toFixed(1) + "%";
+
+}
+
+
+/* =====================================
+   RENDER TABEL DASHBOARD
+===================================== */
+
+function renderBooks() {
+
+    let search =
+        document.getElementById("searchDashboard").value.toLowerCase();
+
+    let filter =
+        document.getElementById("filterDashboard").value;
+
+    let filtered = books.filter(book => {
+
+        let matchSearch =
+            book.judul.toLowerCase().includes(search) ||
+            book.penulis.toLowerCase().includes(search) ||
+            book.kode.toLowerCase().includes(search);
+
+        let matchCategory =
+            filter === "" || book.kategori === filter;
+
+        return matchSearch && matchCategory;
+
+    });
+
+
+    let html = "";
+
+    if (filtered.length === 0) {
+
+        html = `
+            <tr>
+                <td colspan="12">
+                    <div class="empty">
+                        📚 Buku tidak ditemukan
+                    </div>
+                </td>
+            </tr>
+        `;
+
+    } else {
+
+        filtered.forEach((book, index) => {
+
+            let nilai =
+                book.stok * book.hargaBeli;
+
+            let laba =
+                book.stok * (book.hargaJual - book.hargaBeli);
+
+
+            html += `
+
+                <tr>
+
+                    <td>${index + 1}</td>
+
+                    <td>
+                        <strong>${book.kode}</strong>
+                    </td>
+
+                    <td>
+                        <div class="book-title">
+                            ${book.judul}
+                        </div>
+
+                        <div class="author">
+                            ${book.penerbit} (${book.tahun})
+                        </div>
+                    </td>
+
+                    <td>${book.penulis}</td>
+
+                    <td>${book.kategori}</td>
+
+                    <td>
+                        <strong>${book.stok}</strong>
+                    </td>
+
+                    <td>${rupiah(book.hargaBeli)}</td>
+
+                    <td>${rupiah(book.hargaJual)}</td>
+
+                    <td>${rupiah(nilai)}</td>
+
+                    <td>${rupiah(laba)}</td>
+
+                    <td>${getStatus(book)}</td>
+
+                    <td>
+                        <button
+                            class="btn-sale"
+                            onclick="openSaleModal(${books.indexOf(book)})">
+                            Jual
+                        </button>
+
+                        <button
+                            class="btn-edit"
+                            onclick="editBook(${books.indexOf(book)})">
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn-delete"
+                            onclick="deleteBook(${books.indexOf(book)})">
+                            Hapus
+                        </button>
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+
+    document.getElementById("bookTable").innerHTML = html;
+
+    updateDashboard();
+
+}
+
+
+/* =====================================
+   RENDER DATA BUKU
+===================================== */
+
+function renderBookSection() {
+
+    let search =
+        document.getElementById("searchBook").value.toLowerCase();
+
+    let filter =
+        document.getElementById("filterBook").value;
+
+    let filtered = books.filter(book => {
+
+        let matchSearch =
+            book.judul.toLowerCase().includes(search) ||
+            book.penulis.toLowerCase().includes(search) ||
+            book.kode.toLowerCase().includes(search);
+
+        let matchCategory =
+            filter === "" || book.kategori === filter;
+
+        return matchSearch && matchCategory;
+
+    });
+
+
+    let html = "";
+
+
+    if (filtered.length === 0) {
+
+        html = `
+            <tr>
+                <td colspan="11">
+                    <div class="empty">
+                        📚 Data buku tidak ditemukan
+                    </div>
+                </td>
+            </tr>
+        `;
+
+    } else {
+
+        filtered.forEach((book, index) => {
+
+            html += `
+
+                <tr>
+
+                    <td>${index + 1}</td>
+
+                    <td><strong>${book.kode}</strong></td>
+
+                    <td>
+                        <div class="book-title">
+                            ${book.judul}
+                        </div>
+                    </td>
+
+                    <td>${book.penulis}</td>
+
+                    <td>${book.penerbit}</td>
+
+                    <td>${book.kategori}</td>
+
+                    <td><strong>${book.stok}</strong></td>
+
+                    <td>${rupiah(book.hargaBeli)}</td>
+
+                    <td>${rupiah(book.hargaJual)}</td>
+
+                    <td>${getStatus(book)}</td>
+
+                    <td>
+
+                        <button
+                            class="btn-sale"
+                            onclick="openSaleModal(${books.indexOf(book)})">
+                            Jual
+                        </button>
+
+                        <button
+                            class="btn-edit"
+                            onclick="editBook(${books.indexOf(book)})">
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn-delete"
+                            onclick="deleteBook(${books.indexOf(book)})">
+                            Hapus
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+
+    document.getElementById("bookTableSection").innerHTML = html;
+
+}
+
+
+/* =====================================
+   MODAL TAMBAH BUKU
+===================================== */
+
+function openBookModal(index = null) {
+
+    document.getElementById("bookModal").style.display = "flex";
+
+    document.getElementById("bookForm").reset();
+
+    document.getElementById("editIndex").value = "";
+
+    document.getElementById("modalTitle").innerText =
+        "Tambah Buku";
+
+
+    if (index !== null) {
+
+        let book = books[index];
+
+        document.getElementById("modalTitle").innerText =
+            "Edit Buku";
+
+        document.getElementById("editIndex").value = index;
+
+        document.getElementById("kode").value = book.kode;
+
+        document.getElementById("judul").value = book.judul;
+
+        document.getElementById("penulis").value = book.penulis;
+
+        document.getElementById("penerbit").value = book.penerbit;
+
+        document.getElementById("tahun").value = book.tahun;
+
+        document.getElementById("kategori").value = book.kategori;
+
+        document.getElementById("stok").value = book.stok;
+
+        document.getElementById("stokMin").value = book.stokMin;
+
+        document.getElementById("hargaBeli").value =
+            book.hargaBeli;
+
+        document.getElementById("hargaJual").value =
+            book.hargaJual;
+
+    }
+
+}
+
+
+/* =====================================
+   TUTUP MODAL BUKU
+===================================== */
+
+function closeBookModal() {
+
+    document.getElementById("bookModal").style.display = "none";
+
+}
+
+
+/* =====================================
+   SIMPAN BUKU
+===================================== */
+
+document.getElementById("bookForm").addEventListener(
+    "submit",
+    async function(e) {
+
+        e.preventDefault();
+
+
+        let index =
+            document.getElementById("editIndex").value;
+
+
+        let bookData = {
+
+            kode: document.getElementById("kode").value,
+
+            judul: document.getElementById("judul").value,
+
+            penulis: document.getElementById("penulis").value,
+
+            penerbit: document.getElementById("penerbit").value,
+
+            tahun:
+                Number(document.getElementById("tahun").value),
+
+            kategori:
+                document.getElementById("kategori").value,
+
+            stok:
+                Number(document.getElementById("stok").value),
+
+            stokMin:
+                Number(document.getElementById("stokMin").value),
+
+            hargaBeli:
+                Number(document.getElementById("hargaBeli").value),
+
+            hargaJual:
+                Number(document.getElementById("hargaJual").value)
+
+        };
+
+
+        let row = mapBookToRow(bookData);
+
+
+        if (index === "") {
+
+            const { data, error } = await supabaseClient
+                .from("books")
+                .insert(row)
+                .select()
+                .single();
+
+            if (error) {
+                alert("Gagal menambah buku:\n" + error.message);
+                return;
+            }
+
+            bookData.id = data.id;
+            books.push(bookData);
+
+            alert("Buku berhasil ditambahkan!");
+
+        } else {
+
+            let id = books[index].id;
+
+            const { error } = await supabaseClient
+                .from("books")
+                .update(row)
+                .eq("id", id);
+
+            if (error) {
+                alert("Gagal memperbarui buku:\n" + error.message);
+                return;
+            }
+
+            bookData.id = id;
+            books[index] = bookData;
+
+            alert("Data buku berhasil diperbarui!");
+
+        }
+
+
+        closeBookModal();
+
+        renderBooks();
+
+        renderBookSection();
+
+    }
+);
+
+
+/* =====================================
+   EDIT BUKU
+===================================== */
+
+function editBook(index) {
+
+    openBookModal(index);
+
+}
+
+
+/* =====================================
+   HAPUS BUKU
+===================================== */
+
+async function deleteBook(index) {
+
+    let book = books[index];
+
+    let confirmDelete = confirm(
+        "Apakah kamu yakin ingin menghapus buku \"" +
+        book.judul +
+        "\"?"
+    );
+
+
+    if (confirmDelete) {
+
+        const { error } = await supabaseClient
+            .from("books")
+            .delete()
+            .eq("id", book.id);
+
+        if (error) {
+            alert("Gagal menghapus buku:\n" + error.message);
+            return;
+        }
+
+        books.splice(index, 1);
+
+        renderBooks();
+
+        renderBookSection();
+
+        alert("Buku berhasil dihapus!");
+
+    }
+
+}
+
+
+/* =====================================
+   MODAL PENJUALAN
+===================================== */
+
+function openSaleModal(index = null) {
+
+    let select =
+        document.getElementById("saleBook");
+
+    select.innerHTML =
+        `<option value="">Pilih buku...</option>`;
+
+
+    books.forEach((book, i) => {
+
+        if (book.stok > 0) {
+
+            select.innerHTML += `
+
+                <option value="${i}">
+                    ${book.kode} - ${book.judul}
+                    (Stok: ${book.stok})
+                </option>
+
+            `;
+
+        }
+
+    });
+
+
+    document.getElementById("salePrice").value = "";
+
+    document.getElementById("saleQty").value = 1;
+
+    document.getElementById("saleTotal").innerText = "Rp0";
+
+
+    if (index !== null && books[index].stok > 0) {
+
+        select.value = index;
+
+        updateSalePrice();
+
+    }
+
+
+    document.getElementById("saleModal").style.display =
+        "flex";
+
+}
+
+
+function closeSaleModal() {
+
+    document.getElementById("saleModal").style.display =
+        "none";
+
+}
+
+
+/* =====================================
+   HARGA PENJUALAN
+===================================== */
+
+function updateSalePrice() {
+
+    let index =
+        document.getElementById("saleBook").value;
+
+
+    if (index === "") {
+
+        document.getElementById("salePrice").value = "";
+
+        document.getElementById("saleTotal").innerText =
+            "Rp0";
+
+        return;
+
+    }
+
+
+    let book = books[index];
+
+    document.getElementById("salePrice").value =
+        book.hargaJual;
+
+
+    calculateSale();
+
+}
+
+
+/* =====================================
+   HITUNG TOTAL PENJUALAN
+===================================== */
+
+function calculateSale() {
+
+    let price =
+        Number(document.getElementById("salePrice").value);
+
+    let qty =
+        Number(document.getElementById("saleQty").value);
+
+
+    let total = price * qty;
+
+
+    document.getElementById("saleTotal").innerText =
+        rupiah(total);
+
+}
+
+
+/* =====================================
+   PROSES PENJUALAN
+===================================== */
+
+async function processSale() {
+
+    let index =
+        document.getElementById("saleBook").value;
+
+    let qty =
+        Number(document.getElementById("saleQty").value);
+
+
+    if (index === "") {
+
+        alert("Silakan pilih buku!");
+
+        return;
+
+    }
+
+
+    let book = books[index];
+
+
+    if (qty <= 0) {
+
+        alert("Jumlah penjualan harus lebih dari 0!");
+
+        return;
+
+    }
+
+
+    if (qty > book.stok) {
+
+        alert(
+            "Stok tidak mencukupi!\n" +
+            "Stok tersedia: " +
+            book.stok
+        );
+
+        return;
+
+    }
+
+
+    let total =
+        book.hargaJual * qty;
+
+    let laba =
+        (book.hargaJual - book.hargaBeli) * qty;
+
+    let newStok =
+        book.stok - qty;
+
+
+    const { error: updateError } = await supabaseClient
+        .from("books")
+        .update({ stok: newStok })
+        .eq("id", book.id);
+
+    if (updateError) {
+        alert("Gagal mengurangi stok:\n" + updateError.message);
+        return;
+    }
+
+
+    const { error: saleError } = await supabaseClient
+        .from("sales")
+        .insert({
+            book_id: book.id,
+            kode: book.kode,
+            judul: book.judul,
+            qty: qty,
+            harga_jual: book.hargaJual,
+            total: total,
+            laba: laba
+        });
+
+    if (saleError) {
+        alert("Stok terupdate, tapi gagal mencatat riwayat penjualan:\n" + saleError.message);
+    }
+
+
+    book.stok = newStok;
+
+
+    renderBooks();
+
+    renderBookSection();
+
+    closeSaleModal();
+
+
+    alert(
+        "Penjualan berhasil!\n\n" +
+        "Buku: " + book.judul + "\n" +
+        "Jumlah: " + qty + "\n" +
+        "Total: " + rupiah(total) + "\n" +
+        "Laba: " + rupiah(laba)
+    );
+
+}
+
+
+/* =====================================
+   NAVIGASI
+===================================== */
+
+function showSection(section) {
+
+    document.getElementById("dashboard").style.display =
+        section === "dashboard" ? "block" : "none";
+
+    document.getElementById("buku").style.display =
+        section === "buku" ? "block" : "none";
+
+
+    let links =
+        document.querySelectorAll(".menu a");
+
+    links.forEach(link => {
+
+        link.classList.remove("active");
+
+    });
+
+
+    if (section === "dashboard") {
+
+        links[0].classList.add("active");
+
+    } else {
+
+        links[1].classList.add("active");
+
+        renderBookSection();
+
+    }
+
+}
+
+
+/* =====================================
+   TANGGAL
+===================================== */
+
+function tampilkanTanggal() {
+
+    let tanggal = new Date();
+
+    let options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    };
+
+    document.getElementById("tanggal").innerText =
+        tanggal.toLocaleDateString("id-ID", options);
+
+}
+
+
+/* =====================================
+   CLOSE MODAL KETIKA KLIK LUAR
+===================================== */
+
+window.onclick = function(event) {
+
+    let bookModal =
+        document.getElementById("bookModal");
+
+    let saleModal =
+        document.getElementById("saleModal");
+
+
+    if (event.target === bookModal) {
+
+        closeBookModal();
+
+    }
+
+
+    if (event.target === saleModal) {
+
+        closeSaleModal();
+
+    }
+
+};
+
+
+/* =====================================
+   JALANKAN SISTEM
+===================================== */
+
+async function initApp() {
+
+    await loadBooks();
+
+    renderBooks();
+
+    renderBookSection();
+
+}
+
+tampilkanTanggal();
+
+initApp();
+
+</script>
+
+</body>
+</html>
